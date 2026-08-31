@@ -18,22 +18,28 @@ public class Main extends Application {
     private TextField userInput;
     private Button sendButton;
     private Scene scene;
-    private Image daUser = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/DaUser.png")));
-    private Image daDuke =  new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/DaDuke.png")));
-
+    private Image userImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/DaUser.png")));
+    private Image dukeImage =  new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/DaDuke.png")));
+    private Duke duke = new Duke();
 
     @Override
     public void start(Stage stage) {
 
-        scrollPane = new ScrollPane();
-        dialogContainer = new VBox();
+        scrollPane = new ScrollPane(); //Scrollable viewport
+        dialogContainer = new VBox(); //VBox stacks its children vertically
         scrollPane.setContent(dialogContainer); //
 
         userInput = new TextField();
         sendButton = new Button("Send");
 
-        DialogBox dialogBox = new DialogBox("Hello", daUser);
-        dialogContainer.getChildren().addAll(dialogBox);
+        // Event-driven style
+        sendButton.setOnMouseClicked(event -> {
+            handleUserInput();
+        });
+
+        userInput.setOnAction(event -> {
+            handleUserInput();
+        });
 
         AnchorPane mainLayout = new AnchorPane();
 
@@ -53,7 +59,12 @@ public class Main extends Application {
         scrollPane.setVvalue(1);
         scrollPane.setFitToWidth(true);
 
+        // Dialog container
         dialogContainer.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        //Scroll down to the end every time dialogContainer's height changes.
+        dialogContainer.heightProperty().addListener((observable) -> scrollPane.setVvalue(1.0));
+        //...
+
 
         userInput.setPrefWidth(325);
 
@@ -70,4 +81,19 @@ public class Main extends Application {
         stage.setScene(scene); // Setting the stage to show our scene
         stage.show(); // Render the stage.
     }
+
+    /**
+     * Creates a dialog box containing user input, and appends it to
+     * the dialog container. Clears the user input after processing.
+     */
+    private void handleUserInput() {
+        String userText = userInput.getText();
+        String dukeText = duke.getResponse(userInput.getText());
+        dialogContainer.getChildren().addAll(
+                DialogBox.getUserDialog(userInput.getText(), userImage),
+                DialogBox.getBotDialog(dukeText, dukeImage)
+        );
+        userInput.clear();
+    }
+
 }

@@ -1,5 +1,7 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 
 
@@ -9,20 +11,26 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
+import java.io.IOException;
+
 public class DialogBox extends HBox {
-    private Label textLabel;
+    @FXML
+    private Label dialog;
+    @FXML
     private ImageView displayImage;
 
-    public DialogBox(String s, Image i) {
-        textLabel = new Label(s);
-        displayImage = new ImageView(i);
+    private DialogBox(String s, Image i) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
+            fxmlLoader.setController(this);
+            fxmlLoader.setRoot(this);
+            fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        textLabel.setWrapText(true);
-        displayImage.setFitWidth(100);
-        displayImage.setFitHeight(100);
-        this.setAlignment(Pos.TOP_RIGHT);
-
-        this.getChildren().addAll(textLabel, displayImage);
+        dialog.setText(s);
+        displayImage.setImage(i);
     }
 
     public void flip() {
